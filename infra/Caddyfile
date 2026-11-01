@@ -1,0 +1,25 @@
+# Sans domaine : HTTP sur l'IP du VPS.
+# Avec un domaine : remplacer ":80" par "mon-domaine.fr" → HTTPS Let's Encrypt automatique.
+:80 {
+	encode zstd gzip
+
+	# API et terminal (WebSocket géré automatiquement par reverse_proxy)
+	@backend path /api/* /ws/*
+	handle @backend {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# Front Vue (SPA : toute route inconnue renvoie index.html)
+	handle {
+		root * /opt/site-architecture/dist
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options DENY
+		-Server
+	}
+}

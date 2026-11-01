@@ -1,0 +1,18 @@
+# Initialisation incus pour le VPS : pool btrfs en fichier loop de 15 Go (copie à l'écriture + quotas)
+# Usage : sudo incus admin init --preseed < infra/incus-preseed-vps.yaml
+storage_pools:
+  - name: default
+    driver: btrfs
+    config:
+      size: 15GiB
+networks:
+  - name: incusbr0
+    type: bridge
+    config:
+      ipv4.address: auto
+      ipv4.nat: "true"
+      ipv6.address: none
+profiles:
+  - name: default
+    devices:
+      root: { type: disk, path: /, pool: default }

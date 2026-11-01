@@ -1,5 +1,37 @@
 # Plan — Playgrounds activables (incus) pour site-architecture
 
+## État d'avancement (2026-11-01)
+| Étape | État |
+|---|---|
+| 0. Dépôt GitHub privé | ✅ fait |
+| 1. Préparer le VPS | 📝 scripté (`infra/bootstrap-vps.sh`), pas encore lancé |
+| 2. Initialiser incus | ✅ en dev (`incus-preseed-dev.yaml`) · 📝 VPS (`incus-preseed-vps.yaml`) |
+| 3. Images pg-ubuntu / pg-alpine | ✅ fabriquées et testées en dev |
+| 4. Profil playground | ✅ testé : pas de réseau, 512 Mo, 0,5 CPU, 256 processus |
+| 5. Backend | ✅ testé : création, doublon 409, capacité 503, terminal, redimensionnement, arrêt, expiration + avertissement, reprise après redémarrage |
+| 6. Front | ✅ testé de bout en bout dans Chrome (desktop + mobile) |
+| 7. Déploiement | 📝 scripté (`infra/deploy.sh`, Caddyfile, service systemd), à lancer sur le VPS |
+
+**Changement de stratégie :** le développement se fait dans le container de dev (incus imbriqué), pas sur le VPS. Le VPS ne fait que déployer avec `infra/bootstrap-vps.sh` (une fois), puis `infra/deploy.sh` (à chaque mise à jour). Claude Code n'est pas nécessaire sur le VPS.
+
+### Écarts par rapport au plan initial
+- **CPU** : `limits.cpu.allowance: 50%` n'est qu'une *priorité*. Le plafond dur s'écrit `50ms/100ms`, vérifié avec `cpu.max = 50000 100000`.
+- **Alpine** : 3.20 n'est plus disponible sur `images:`, on utilise **3.24**.
+- **Dev imbriqué** : driver `dir` (pas de loop device, donc pas de quota disque). Il a aussi fallu réduire `/etc/subuid` et `/etc/subgid` (`root:1000000:998000000`) pour tenir dans la plage d'UID du container parent.
+- **`COOKIE_SECRET`** est obligatoire quand `NODE_ENV=production` ; sans lui, les sessions sautent à chaque redémarrage.
+- **`trustProxy`** est limité à `127.0.0.1` (Caddy), pour qu'un client ne puisse pas falsifier son IP via `X-Forwarded-For`.
+- **Avertissement d'expiration** : il est renvoyé à un terminal qui se connecte après sa diffusion, sans doublon.
+
+### Mise en ligne sur le VPS
+```bash
+# 1. sur le VPS, avec ton utilisateur sudo (pas root) : clé de déploiement GitHub, puis
+sudo install -d -o "$USER" /opt/site-architecture
+git clone git@github.com:One-Up-Dev/site-architecture.git /opt/site-architecture
+sudo bash /opt/site-architecture/infra/bootstrap-vps.sh   # une seule fois
+# 2. à chaque mise à jour poussée sur GitHub
+sudo bash /opt/site-architecture/infra/deploy.sh
+```
+
 ## Contexte
 Le site vitrine Vue 3 + Vite (`~/site-architecture`) a une carte « Bacs à sable » qui ne fait encore rien. Objectif : quand un visiteur clique, il obtient **un terminal root dans son navigateur**, connecté à un **container incus éphémère**. Le site sera hébergé sur un VPS et utilisé par plusieurs personnes en même temps. On commence petit (MVP) et on étend ensuite.
 
@@ -83,13 +115,13 @@ site-architecture/
 ### Étape 3 — Fabriquer les images (`infra/build-images.sh`)
 Le VPS a Internet, contrairement aux playgrounds. On pré-installe donc tout au moment de la fabrication :
 - **pg-ubuntu** : depuis `images:ubuntu/24.04`, avec un réseau temporaire, installer `bash-completion vim nano git curl wget python3 htop tree less man-db iproute2 procps jq unzip`, ajouter un message d'accueil (`/etc/motd` : « Playground — 30 min, pas d'Internet »), nettoyer apt, puis `incus publish --alias pg-ubuntu`.
-- **pg-alpine** : depuis `images:alpine/3.20`, installer `bash vim nano git python3 htop tree jq`, puis `incus publish --alias pg-alpine`.
+- **pg-alpine** : depuis `images:alpine/3.24`, installer `bash vim nano git python3 htop tree jq`, puis `incus publish --alias pg-alpine`.
 - Le script est relançable : il recrée les images s'il est rejoué.
 
 ### Étape 4 — Profil `playground` (`infra/profile-playground.yaml`)
 ```yaml
 config:
-  limits.cpu.allowance: 50%
+  limits.cpu.allowance: 50ms/100ms   # plafond dur ; "50%" ne serait qu'une priorité
   limits.memory: 512MB
   limits.memory.swap: "false"
   limits.processes: "256"

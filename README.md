@@ -26,5 +26,23 @@ npm run build                     # sortie dans dist/
 | `components/CookieNotice.vue` | bandeau cookies (mémorisé dans localStorage) |
 | `views/PlaceholderView.vue` | page générique pour les routes pas encore construites |
 
+## Playgrounds (terminal Linux dans le navigateur)
+Chaque visiteur peut lancer un container incus éphémère (Ubuntu ou Alpine) : 30 min, 0,5 CPU, 512 Mo, sans Internet.
+
+**Dev** (dans le container de dev, avec incus imbriqué) :
+```bash
+# une fois : incus admin init --preseed < infra/incus-preseed-dev.yaml
+#            ./infra/apply-profile.sh && ./infra/build-images.sh
+cd server && npm install
+sg incus-admin -c "COOKIE_SECRET=dev npx tsx watch src/index.ts"   # API sur :3000
+npm run dev -- --host 127.0.0.1                                    # front sur :5173 (proxy /api et /ws)
+```
+
+| Dossier | Contenu |
+|---|---|
+| `server/` | API Fastify + relais WebSocket vers `incus exec` (TypeScript) |
+| `infra/` | init incus, profil, fabrication des images, Caddy, systemd, scripts VPS |
+| `src/views/Playground*.vue` | choix de l'image et page du terminal (xterm.js) |
+
 ## Feuille de route
 Le plan des playgrounds (incus, backend, déploiement VPS) est dans [`docs/PLAN-playgrounds.md`](docs/PLAN-playgrounds.md).

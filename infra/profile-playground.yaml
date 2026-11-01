@@ -1,0 +1,16 @@
+description: Playground anonyme — 0,5 CPU, 512 Mo, sans réseau
+config:
+  limits.cpu.allowance: 50ms/100ms   # plafond dur de 0,5 CPU ("50%" serait seulement une priorité)
+  limits.memory: 512MB
+  limits.memory.swap: "false"
+  limits.processes: "256"
+  security.privileged: "false"
+  security.nesting: "false"
+  security.idmap.isolated: "true"
+devices:
+  root:
+    type: disk
+    path: /
+    pool: default
+    # Le quota "size: 2GB" est ajouté par apply-profile.sh sur les pools qui le supportent (btrfs/zfs/lvm)
+# Aucune carte réseau : ni Internet, ni accès aux autres containers

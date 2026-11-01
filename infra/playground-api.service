@@ -1,0 +1,32 @@
+[Unit]
+Description=API des playgrounds (Node + incus)
+After=network-online.target incus.service
+Wants=network-online.target
+Requires=incus.service
+
+[Service]
+Type=simple
+User=playground
+Group=playground
+SupplementaryGroups=incus-admin
+WorkingDirectory=/opt/site-architecture/server
+EnvironmentFile=/etc/playground-api.env
+ExecStart=/usr/bin/node dist/index.js
+Restart=always
+RestartSec=3
+
+# Durcissement (le groupe incus-admin donne beaucoup de pouvoir : on limite le reste)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/incus/unix.socket
+
+[Install]
+WantedBy=multi-user.target

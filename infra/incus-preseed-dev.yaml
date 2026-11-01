@@ -1,0 +1,18 @@
+# Initialisation incus pour le DEV (container imbriqué : pas de loop device → driver "dir", sans quota)
+# Usage : incus admin init --preseed < infra/incus-preseed-dev.yaml
+storage_pools:
+  - name: default
+    driver: dir
+networks:
+  # Bridge utilisé UNIQUEMENT pour fabriquer les images (téléchargement de paquets).
+  # Les playgrounds n'y sont jamais attachés.
+  - name: incusbr0
+    type: bridge
+    config:
+      ipv4.address: auto
+      ipv4.nat: "true"
+      ipv6.address: none
+profiles:
+  - name: default
+    devices:
+      root: { type: disk, path: /, pool: default }
