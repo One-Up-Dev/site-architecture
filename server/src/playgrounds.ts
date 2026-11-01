@@ -47,8 +47,12 @@ const pendingSessions = new Set<string>()
 export async function createPlayground(image: ImageId, session: string, ip: string): Promise<Playground> {
   if (pendingSessions.has(session)) throw new PlaygroundError('Un playground est déjà en cours de création.', 409, 'pending')
   const all = await listPlaygrounds()
-  const mine = all.find(p => p.session === session || p.ip === ip)
-  if (mine) throw new PlaygroundError('Vous avez déjà un playground actif.', 409, 'already_active')
+  if (all.some(p => p.session === session)) {
+    throw new PlaygroundError('Vous avez déjà un bac à sable actif.', 409, 'already_active')
+  }
+  if (all.some(p => p.ip === ip)) {
+    throw new PlaygroundError('Un bac à sable est déjà actif depuis votre connexion. Fermez-le ou attendez qu’il expire.', 409, 'ip_busy')
+  }
   if (all.length + pending >= config.maxPlaygrounds) {
     throw new PlaygroundError('Tous les playgrounds sont occupés. Réessayez dans quelques minutes.', 503, 'full')
   }
