@@ -8,87 +8,78 @@ export const brand = {
   logoSrc: null,
 }
 
-export const socials = [
-  { label: 'X', href: '#', icon: 'x' },
-  { label: 'LinkedIn', href: '#', icon: 'linkedin' },
-  { label: 'Discord', href: '#', icon: 'discord' },
-]
-
 export const navLinks = [
   { label: 'Catalogue', to: '/catalogue' },
   { label: 'À propos', to: '/a-propos' },
-  { label: 'Tarifs', to: '/tarifs' },
-  { label: 'Équipes', to: '/equipes' },
-  { label: 'Auteurs', to: '/auteurs' },
-  { label: 'Étudiants', to: '/etudiants' },
-]
-export const loginLink = { label: 'Connexion', to: '/connexion' }
-
-// Grille principale : cartes texte (sombres) puis tuiles « logo »
-export const highlights = [
-  { kind: 'text', title: 'Bacs à sable', text: 'Des environnements vierges prêts à l’emploi', to: '/bacs-a-sable' },
-  { kind: 'text', title: 'Exemples', text: 'Découvrez ce que vous pouvez créer', to: '/exemples' },
 ]
 
-const palette = ['#2563eb', '#16a34a', '#db2777', '#ea580c', '#7c3aed', '#0891b2', '#ca8a04', '#dc2626']
-const topics = [
-  'Kubernetes', 'Linux', 'Docker', 'Git', 'Terraform', 'Ansible', 'Python', 'Réseau',
-  'Sécurité', 'Observabilité', 'Bases de données', 'CI / CD', 'Cloud', 'Go', 'Rust', 'Bash',
-  'Nginx', 'Monitoring', 'Service mesh', 'GitOps', 'Stockage', 'Serverless', 'Messagerie', 'IAM',
-  'Conteneurs', 'Edge', 'Data', 'IA appliquée', 'Web', 'API', 'Tests', 'Performance',
-  'Systèmes', 'Scripting', 'DevSecOps', 'Automatisation', 'Virtualisation', 'Backup', 'DNS',
+// ── Sujets du catalogue ─────────────────────────────────────
+export const topics = [
+  {
+    slug: 'linux', name: 'Linux', color: '#ca8a04',
+    summary: 'La ligne de commande et l’administration système.',
+    description: 'Naviguez dans le système de fichiers, gérez utilisateurs et permissions, surveillez les processus et automatisez vos tâches en Bash.',
+  },
+  {
+    slug: 'git', name: 'Git', color: '#ea580c',
+    summary: 'Versionner son code et travailler à plusieurs.',
+    description: 'Créez un dépôt, enregistrez des modifications, travaillez avec des branches et résolvez vos premiers conflits de fusion.',
+  },
+  {
+    slug: 'python', name: 'Python', color: '#2563eb',
+    summary: 'Scripts, environnements et data science.',
+    description: 'Écrivez des scripts, gérez vos environnements virtuels avec uv et préparez une machine prête pour le machine learning.',
+  },
+  {
+    slug: 'docker', name: 'Docker', color: '#0891b2',
+    summary: 'Conteneuriser une application.',
+    description: 'Comprenez les images et les conteneurs, lisez et écrivez un Dockerfile, et apprenez les bonnes pratiques de construction.',
+  },
 ]
-export const topicTiles = topics.map((name, i) => ({
-  kind: 'logo',
-  name,
-  color: palette[i % palette.length],
-  caption: i % 5 === 0 ? `${name} — certification` : null,
-  author: i % 7 === 3 ? 'par Auteur Exemple' : null,
-  to: `/catalogue/${i + 1}`,
-}))
 
-// Sections de cartes de contenu (titre + description)
-const lorem = [
-  'Une série d’exercices pratiques pour progresser pas à pas.',
-  'Des scénarios courts pour réviser avant un examen.',
-  'Parcours complet, de la découverte aux usages avancés, avec des laboratoires guidés et des corrigés détaillés à chaque étape.',
-  'Mettez les mains dans le moteur : cassez, réparez, recommencez.',
-  'Ateliers conçus par la communauté.',
+// ── Exercices (contenu de démonstration) ────────────────────
+// image : environnement lancé pour l'exercice (images dédiées à venir)
+export const exercises = [
+  { slug: 'linux-navigation', topic: 'linux', title: 'Se repérer dans le système', summary: 'Parcourir l’arborescence, lire et rechercher des fichiers.', level: 'débutant', durationMin: 15, image: 'pg-alpine', popular: true },
+  { slug: 'linux-permissions', topic: 'linux', title: 'Permissions et utilisateurs', summary: 'Créer des utilisateurs, régler les droits et comprendre chmod / chown.', level: 'débutant', durationMin: 20, image: 'pg-ubuntu', featured: true },
+  { slug: 'linux-processus', topic: 'linux', title: 'Processus et services', summary: 'Observer, prioriser et arrêter des processus.', level: 'intermédiaire', durationMin: 25, image: 'pg-ubuntu', popular: true },
+
+  { slug: 'git-premier-depot', topic: 'git', title: 'Premier dépôt et branches', summary: 'Initialiser un dépôt, faire des commits et travailler avec des branches.', level: 'débutant', durationMin: 20, image: 'pg-ubuntu', featured: true },
+  { slug: 'git-conflits', topic: 'git', title: 'Résoudre un conflit de fusion', summary: 'Provoquer puis résoudre proprement un conflit entre deux branches.', level: 'intermédiaire', durationMin: 20, image: 'pg-ubuntu', popular: true },
+
+  { slug: 'python-ml-uv', topic: 'python', title: 'Environnement ML avec uv', summary: 'Créer un environnement virtuel avec uv et y ajouter les librairies d’un projet de machine learning.', level: 'intermédiaire', durationMin: 25, image: 'pg-ubuntu', featured: true },
+  { slug: 'python-scripts', topic: 'python', title: 'Premiers scripts', summary: 'Écrire et exécuter des scripts, lire des arguments et des fichiers.', level: 'débutant', durationMin: 15, image: 'pg-ubuntu', popular: true },
+  { slug: 'python-json', topic: 'python', title: 'Manipuler des données JSON', summary: 'Lire, transformer et écrire des fichiers JSON.', level: 'débutant', durationMin: 15, image: 'pg-alpine' },
+
+  { slug: 'docker-dockerfile', topic: 'docker', title: 'Lire un Dockerfile', summary: 'Comprendre chaque instruction d’un Dockerfile existant.', level: 'débutant', durationMin: 15, image: 'pg-ubuntu', featured: true },
+  { slug: 'docker-bonnes-pratiques', topic: 'docker', title: 'Bonnes pratiques d’image', summary: 'Réduire la taille d’une image et améliorer son cache de construction.', level: 'intermédiaire', durationMin: 20, image: 'pg-ubuntu' },
 ]
-const makeCards = (prefix, n) => Array.from({ length: n }, (_, i) => ({
-  kind: 'content',
-  title: `${prefix} ${i + 1}`,
-  text: lorem[i % lorem.length],
-  to: `/parcours/${prefix.toLowerCase()}-${i + 1}`,
-}))
 
+export const topicBySlug = slug => topics.find(t => t.slug === slug)
+export const exerciseBySlug = slug => exercises.find(e => e.slug === slug)
+export const exercisesOf = slug => exercises.filter(e => e.topic === slug)
+
+// ── Sections de la page d'accueil ───────────────────────────
 export const sections = [
-  { id: 'featured', label: 'À la une', cards: makeCards('Parcours', 6), addTile: true },
-  { id: 'popular', label: 'Populaires', cards: makeCards('Atelier', 40), pageSize: 25 },
+  { id: 'featured', label: 'À la une', exercises: exercises.filter(e => e.featured) },
+  { id: 'popular', label: 'Populaires', exercises: exercises.filter(e => e.popular) },
 ]
 
 export const footer = {
-  columns: [
-    { title: null, links: [
-      { label: 'À propos', to: '/a-propos' }, { label: 'Explorer', to: '/catalogue' },
-      { label: 'Auteurs', to: '/auteurs' }, { label: 'Étudiants', to: '/etudiants' },
-      { label: 'Contribuer', to: '/contribuer' }, { label: 'Mentions légales', to: '/mentions-legales' },
-      { label: 'Confidentialité', to: '/confidentialite' }, { label: 'CGU', to: '/cgu' },
-    ] },
-    { title: 'Contenu', links: [
-      { label: 'Offre Plus', to: '/plus' }, { label: 'FAQ', to: '/faq' },
-      { label: 'Tarifs', to: '/tarifs' }, { label: 'Équipes', to: '/equipes' },
-      { label: 'Presse', to: '/presse' }, { label: 'Sécurité', to: '/securite' },
-      { label: 'Support', to: '/support' },
-    ] },
-    { title: 'Liens', links: [
-      { label: 'Projet partenaire', href: '#' }, { label: 'Comparatif', href: '#' },
-      { label: 'Le fondateur', href: '#' },
-    ], socials: true },
+  links: [
+    { label: 'Catalogue', to: '/catalogue' },
+    { label: 'À propos', to: '/a-propos' },
+    { label: 'Mentions légales', to: '/mentions-legales' },
   ],
+  copyright: `© ${new Date().getFullYear()} Votre Marque`,
 }
 
-export const cookieNotice = {
-  text: 'Nous utilisons des cookies pour améliorer votre expérience sur ce site.',
-  button: 'OK',
-}
+// ── Conversion en tuiles pour la grille ─────────────────────
+export const topicTile = t => ({ kind: 'logo', name: t.name, color: t.color, caption: t.summary, to: `/catalogue/${t.slug}` })
+export const exerciseTile = e => ({
+  kind: 'content',
+  title: e.title,
+  text: e.summary,
+  meta: `${topicBySlug(e.topic)?.name ?? ''} · ${e.durationMin} min · ${e.level}`,
+  to: `/exercices/${e.slug}`,
+})

@@ -12,6 +12,19 @@
 | 6. Front | ✅ testé de bout en bout dans Chrome (desktop + mobile) |
 | 7. Déploiement | 📝 scripté (`infra/deploy.sh`, Caddyfile, service systemd), à lancer sur le VPS |
 
+### Étape A — Simplification du site (fait)
+- Header réduit à Catalogue et À propos ; pas de Connexion, d'icônes sociales ni de bandeau cookies ; pied de page minimal.
+- Catalogue de 4 sujets (Linux, Git, Python, Docker) avec des exercices de démonstration dans `src/data/site.js`.
+- Pages : `/catalogue`, `/catalogue/:topic`, `/exercices/:slug` (bouton « Lancer l'exercice ») ; page libre `/bacs-a-sable` supprimée.
+- Backend inchangé : chaque exercice pointe pour l'instant vers `pg-ubuntu` ou `pg-alpine`.
+
+### Étape B — Moteur d'exercices (à planifier)
+- Images par exercice, fabriquées par `infra/build-images.sh`. Exemple : `pg-python-ml` avec uv et un cache uv pré-rempli (numpy, pandas, scikit-learn, matplotlib, jupyter), et `UV_OFFLINE=1`. Les librairies s'installent sans Internet.
+- Exercices définis côté serveur (`server/exercises/*.yaml`) : image, consignes en étapes, scripts de vérification via `incus exec`. L'API choisit l'image à partir de l'exercice ; le client ne choisit plus une image arbitraire.
+- Panneau de consignes à côté du terminal, avec un bouton « Vérifier l'étape ».
+- Docker : `security.nesting=true` pour ces seules images, ou bien des exercices sans exécution de Docker. Décision à prendre.
+- Surveiller la taille des images : 40 Go de disque, et environ 1 à 2 Go par image avec un cache ML.
+
 **Changement de stratégie :** le développement se fait dans le container de dev (incus imbriqué), pas sur le VPS. Le VPS ne fait que déployer avec `infra/bootstrap-vps.sh` (une fois), puis `infra/deploy.sh` (à chaque mise à jour). Claude Code n'est pas nécessaire sur le VPS.
 
 ### Écarts par rapport au plan initial

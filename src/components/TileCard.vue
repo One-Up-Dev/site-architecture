@@ -1,10 +1,10 @@
 <script setup>
-// Carte carrée unique, quatre variantes : text | logo | content | add
+// Carte carrée unique, trois variantes : text | logo | content
 defineProps({ item: { type: Object, required: true } })
 </script>
 
 <template>
-  <RouterLink v-if="item.kind !== 'add'" :to="item.to" class="tile" :class="`tile--${item.kind}`">
+  <RouterLink :to="item.to" class="tile" :class="`tile--${item.kind}`">
     <template v-if="item.kind === 'text'">
       <h3 class="tile__title">{{ item.title }}</h3>
       <p class="tile__text">{{ item.text }}</p>
@@ -23,11 +23,8 @@ defineProps({ item: { type: Object, required: true } })
     <template v-else>
       <h3 class="tile__title">{{ item.title }}</h3>
       <p class="tile__text">{{ item.text }}</p>
+      <p v-if="item.meta" class="tile__meta">{{ item.meta }}</p>
     </template>
-  </RouterLink>
-
-  <RouterLink v-else :to="item.to || '/contribuer'" class="tile tile--add" aria-label="Ajouter">
-    <span aria-hidden="true">+</span>
   </RouterLink>
 </template>
 
@@ -62,15 +59,10 @@ defineProps({ item: { type: Object, required: true } })
 .tile--content .tile__title { color: var(--c-title); font-size: 15.2px; font-weight: 600; margin-bottom: 8px; }
 .tile--content .tile__text {
   color: var(--c-muted); font-size: 12.8px; line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-/* Tuile « + » en pointillés */
-.tile--add {
-  align-items: center; justify-content: center; border: 1px dashed #ccc; box-shadow: none;
-  color: #999; font-size: 36px; font-weight: 300; background: transparent;
-}
-.tile--add:hover { color: #555; border-color: #999; }
+.tile__meta { margin-top: auto; padding-top: 8px; font-size: 12px; color: #999; }
 
 @media (max-width: 600px) {
   .tile { aspect-ratio: auto; height: 200px; }

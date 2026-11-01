@@ -5,6 +5,7 @@ import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 import { getCurrent, stopPlayground, terminalUrl } from '../api'
+import { exerciseBySlug } from '../data/site'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,6 +15,10 @@ const notice = ref('')
 const expiresAt = ref(null)
 const now = ref(Date.now())
 const term = shallowRef(null)
+// Exercice d'origine (?ex=slug) pour le lien de retour
+const exercise = computed(() => exerciseBySlug(route.query.ex))
+const backTo = computed(() => exercise.value ? `/exercices/${exercise.value.slug}` : '/catalogue')
+const backLabel = computed(() => exercise.value ? exercise.value.title : 'Catalogue')
 let fit, ws, retries = 0, ended = false, clock, onResize
 
 const remaining = computed(() => {
@@ -41,13 +46,13 @@ function connect() {
     if (typeof ev.data !== 'string') return t.write(new Uint8Array(ev.data))
     const m = JSON.parse(ev.data)
     if (m.type === 'warning') notice.value = `Attention : la session se termine dans ${Math.ceil(m.secondsLeft / 60)} min.`
-    else if (m.type === 'expired') finish(m.reason === 'stopped' ? 'Bac à sable arrêté.' : 'Session expirée : le bac à sable a été effacé.')
+    else if (m.type === 'expired') finish(m.reason === 'stopped' ? 'Environnement arrêté.' : 'Session expirée : l’environnement a été effacé.')
     else if (m.type === 'exit') finish('Le shell s’est terminé. Rechargez la page pour en ouvrir un nouveau.')
     else if (m.type === 'error') finish(m.message)
   }
   ws.onclose = ev => {
     if (ended) return
-    if (ev.code === 4404) return finish('Bac à sable introuvable ou expiré.')
+    if (ev.code === 4404) return finish('Environnement introuvable ou expiré.')
     if (retries++ < 5) {
       state.value = 'reconnexion'
       setTimeout(connect, 1000 * retries)
@@ -65,7 +70,7 @@ onMounted(async () => {
   const p = await getCurrent().catch(() => null)
   if (!p || p.id !== route.params.id) {
     state.value = 'terminé'
-    notice.value = 'Ce bac à sable n’existe plus.'
+    notice.value = 'Cet environnement n’existe plus.'
     return
   }
   expiresAt.value = new Date(p.expiresAt).getTime()
@@ -99,18 +104,18 @@ onBeforeUnmount(() => {
 
 async function stop() {
   try { await stopPlayground(route.params.id) } catch { /* déjà arrêté */ }
-  finish('Bac à sable arrêté.')
+  finish('Environnement arrêté.')
 }
 </script>
 
 <template>
   <main class="pg">
     <div class="pg__bar">
-      <RouterLink to="/bacs-a-sable" class="pg__back">← Bacs à sable</RouterLink>
+      <RouterLink :to="backTo" class="pg__back">← {{ backLabel }}</RouterLink>
       <span class="pg__state" :class="`is-${state}`">{{ state }}</span>
       <span class="pg__timer" :class="{ urgent }" title="Temps restant">⏱ {{ remaining }}</span>
       <button v-if="state !== 'terminé'" type="button" class="pg__stop" @click="stop">Arrêter</button>
-      <button v-else type="button" class="pg__stop" @click="router.push('/bacs-a-sable')">Nouveau bac à sable</button>
+      <button v-else type="button" class="pg__stop" @click="router.push(backTo)">Retour</button>
     </div>
     <p v-if="notice" class="pg__notice" role="status">{{ notice }}</p>
     <div ref="host" class="pg__term"></div>
