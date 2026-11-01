@@ -1,0 +1,5 @@
+{
+  "image": "pg-ubuntu",
+  "setup": "setup.sh",
+  "cwd": "/root/projet"
+}

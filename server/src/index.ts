@@ -3,7 +3,8 @@ import cookie from '@fastify/cookie'
 import rateLimit from '@fastify/rate-limit'
 import websocket from '@fastify/websocket'
 import { z } from 'zod'
-import { config, images } from './config.js'
+import { config } from './config.js'
+import { getExercise, listExercises } from './exercises.js'
 import { ensureSession, readSession } from './session.js'
 import {
   PlaygroundError, createPlayground, destroy, findOwned, listPlaygrounds, publicView,
@@ -27,7 +28,7 @@ app.setErrorHandler((err, req, reply) => {
 
 app.get('/api/health', async () => ({ ok: true }))
 
-app.get('/api/images', async () => images)
+app.get('/api/exercises', async () => listExercises())
 
 app.get('/api/playgrounds/current', async (req, reply) => {
   const sid = ensureSession(req, reply)
@@ -36,16 +37,17 @@ app.get('/api/playgrounds/current', async (req, reply) => {
   return publicView(p)
 })
 
-const CreateBody = z.object({ image: z.enum(images.map(i => i.id) as [string, ...string[]]) })
+const CreateBody = z.object({ exercise: z.string().regex(/^[a-z0-9-]{1,64}$/) }).strict()
 
 app.post('/api/playgrounds', {
   config: { rateLimit: { max: config.createPerHour, timeWindow: '1 hour' } },
 }, async (req, reply) => {
   const sid = ensureSession(req, reply)
   const body = CreateBody.safeParse(req.body)
-  if (!body.success) return reply.code(400).send({ error: 'bad_request', message: 'Image inconnue.' })
-  const p = await createPlayground(body.data.image as any, sid, req.ip)
-  req.log.info({ id: p.id, image: p.image, ip: req.ip }, 'playground créé')
+  const exercise = body.success ? getExercise(body.data.exercise) : undefined
+  if (!exercise) return reply.code(400).send({ error: 'bad_request', message: 'Exercice inconnu ou pas encore disponible.' })
+  const p = await createPlayground(exercise, sid, req.ip)
+  req.log.info({ id: p.id, exercise: p.exercise, ip: req.ip }, 'playground créé')
   return reply.code(201).send(publicView(p))
 })
 
@@ -67,7 +69,7 @@ app.get<{ Params: { id: string }; Querystring: { cols?: string; rows?: string } 
       socket.send(JSON.stringify({ type: 'error', message: 'Playground introuvable ou expiré.' }))
       return socket.close(4404)
     }
-    await attach(socket, p, req.query.cols, req.query.rows)
+    await attach(socket, p, req.query.cols, req.query.rows, getExercise(p.exercise)?.cwd)
     // Connexion après l'avertissement diffusé par le reaper : le renvoyer à ce terminal
     const left = new Date(p.expiresAt).getTime() - Date.now()
     if (warned.has(p.id) && left > 0 && socket.readyState === 1) {
@@ -96,6 +98,7 @@ async function reap() {
 
 await app.listen({ port: config.port, host: config.host })
 const existing = await listPlaygrounds().catch(() => [])
+app.log.info({ exercises: listExercises() }, 'exercices chargés')
 app.log.info({ existing: existing.length, max: config.maxPlaygrounds, ttlMin: config.ttlMinutes }, 'playgrounds retrouvés au démarrage')
 await reap()
 const timer = setInterval(reap, config.reaperIntervalMs)

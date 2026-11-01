@@ -38,21 +38,22 @@ export const topics = [
 ]
 
 // ── Exercices (contenu de démonstration) ────────────────────
-// image : environnement lancé pour l'exercice (images dédiées à venir)
+// Un exercice est lançable quand il a son dossier exercises/<slug>/ (cours, décor, image).
 export const exercises = [
-  { slug: 'linux-navigation', topic: 'linux', title: 'Se repérer dans le système', summary: 'Parcourir l’arborescence, lire et rechercher des fichiers.', level: 'débutant', durationMin: 15, image: 'pg-alpine', popular: true },
-  { slug: 'linux-permissions', topic: 'linux', title: 'Permissions et utilisateurs', summary: 'Créer des utilisateurs, régler les droits et comprendre chmod / chown.', level: 'débutant', durationMin: 20, image: 'pg-ubuntu', featured: true },
-  { slug: 'linux-processus', topic: 'linux', title: 'Processus et services', summary: 'Observer, prioriser et arrêter des processus.', level: 'intermédiaire', durationMin: 25, image: 'pg-ubuntu', popular: true },
+  { slug: 'linux-ls', topic: 'linux', title: 'La commande ls', summary: 'Lister un dossier, afficher les fichiers cachés, trier par date ou par taille, filtrer avec des motifs.', level: 'débutant', durationMin: 20, featured: true, popular: true },
+  { slug: 'linux-navigation', topic: 'linux', title: 'Se repérer dans le système', summary: 'Parcourir l’arborescence, lire et rechercher des fichiers.', level: 'débutant', durationMin: 15, popular: true },
+  { slug: 'linux-permissions', topic: 'linux', title: 'Permissions et utilisateurs', summary: 'Créer des utilisateurs, régler les droits et comprendre chmod / chown.', level: 'débutant', durationMin: 20 },
+  { slug: 'linux-processus', topic: 'linux', title: 'Processus et services', summary: 'Observer, prioriser et arrêter des processus.', level: 'intermédiaire', durationMin: 25, popular: true },
 
-  { slug: 'git-premier-depot', topic: 'git', title: 'Premier dépôt et branches', summary: 'Initialiser un dépôt, faire des commits et travailler avec des branches.', level: 'débutant', durationMin: 20, image: 'pg-ubuntu', featured: true },
-  { slug: 'git-conflits', topic: 'git', title: 'Résoudre un conflit de fusion', summary: 'Provoquer puis résoudre proprement un conflit entre deux branches.', level: 'intermédiaire', durationMin: 20, image: 'pg-ubuntu', popular: true },
+  { slug: 'git-premier-depot', topic: 'git', title: 'Premier dépôt et branches', summary: 'Initialiser un dépôt, faire des commits et travailler avec des branches.', level: 'débutant', durationMin: 20, featured: true },
+  { slug: 'git-conflits', topic: 'git', title: 'Résoudre un conflit de fusion', summary: 'Provoquer puis résoudre proprement un conflit entre deux branches.', level: 'intermédiaire', durationMin: 20, popular: true },
 
-  { slug: 'python-ml-uv', topic: 'python', title: 'Environnement ML avec uv', summary: 'Créer un environnement virtuel avec uv et y ajouter les librairies d’un projet de machine learning.', level: 'intermédiaire', durationMin: 25, image: 'pg-ubuntu', featured: true },
-  { slug: 'python-scripts', topic: 'python', title: 'Premiers scripts', summary: 'Écrire et exécuter des scripts, lire des arguments et des fichiers.', level: 'débutant', durationMin: 15, image: 'pg-ubuntu', popular: true },
-  { slug: 'python-json', topic: 'python', title: 'Manipuler des données JSON', summary: 'Lire, transformer et écrire des fichiers JSON.', level: 'débutant', durationMin: 15, image: 'pg-alpine' },
+  { slug: 'python-ml-uv', topic: 'python', title: 'Environnement ML avec uv', summary: 'Créer un environnement virtuel avec uv et y ajouter les librairies d’un projet de machine learning.', level: 'intermédiaire', durationMin: 25, featured: true },
+  { slug: 'python-scripts', topic: 'python', title: 'Premiers scripts', summary: 'Écrire et exécuter des scripts, lire des arguments et des fichiers.', level: 'débutant', durationMin: 15, popular: true },
+  { slug: 'python-json', topic: 'python', title: 'Manipuler des données JSON', summary: 'Lire, transformer et écrire des fichiers JSON.', level: 'débutant', durationMin: 15 },
 
-  { slug: 'docker-dockerfile', topic: 'docker', title: 'Lire un Dockerfile', summary: 'Comprendre chaque instruction d’un Dockerfile existant.', level: 'débutant', durationMin: 15, image: 'pg-ubuntu', featured: true },
-  { slug: 'docker-bonnes-pratiques', topic: 'docker', title: 'Bonnes pratiques d’image', summary: 'Réduire la taille d’une image et améliorer son cache de construction.', level: 'intermédiaire', durationMin: 20, image: 'pg-ubuntu' },
+  { slug: 'docker-dockerfile', topic: 'docker', title: 'Lire un Dockerfile', summary: 'Comprendre chaque instruction d’un Dockerfile existant.', level: 'débutant', durationMin: 15, featured: true },
+  { slug: 'docker-bonnes-pratiques', topic: 'docker', title: 'Bonnes pratiques d’image', summary: 'Réduire la taille d’une image et améliorer son cache de construction.', level: 'intermédiaire', durationMin: 20 },
 ]
 
 export const topicBySlug = slug => topics.find(t => t.slug === slug)

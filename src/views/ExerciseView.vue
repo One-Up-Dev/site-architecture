@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { createPlayground, getCurrent } from '../api'
+import { createPlayground, getCurrent, getExercises } from '../api'
 import { exerciseBySlug, topicBySlug } from '../data/site'
 
 const route = useRoute()
@@ -11,14 +11,19 @@ const topic = computed(() => exercise.value && topicBySlug(exercise.value.topic)
 const current = ref(null)
 const launching = ref(false)
 const error = ref('')
+const available = ref(null)   // null = en cours de vérification
 
-onMounted(async () => { current.value = await getCurrent().catch(() => null) })
+onMounted(async () => {
+  const [cur, list] = await Promise.all([getCurrent().catch(() => null), getExercises().catch(() => [])])
+  current.value = cur
+  available.value = list.includes(route.params.slug)
+})
 
 async function launch() {
   error.value = ''
   launching.value = true
   try {
-    const p = await createPlayground(exercise.value.image)
+    const p = await createPlayground(exercise.value.slug)
     router.push({ name: 'playground', params: { id: p.id }, query: { ex: exercise.value.slug } })
   } catch (e) {
     error.value = e.message
@@ -44,9 +49,10 @@ async function launch() {
       </div>
       <p v-if="error && !current" class="page__box page__box--error" role="alert">{{ error }}</p>
 
-      <button type="button" class="page__launch" :disabled="launching || !!current" @click="launch">
-        {{ launching ? 'Démarrage…' : 'Lancer l’exercice' }}
+      <button v-if="available !== false" type="button" class="page__launch" :disabled="launching || !!current || available === null" @click="launch">
+        {{ launching ? 'Préparation de l’environnement…' : 'Lancer l’exercice' }}
       </button>
+      <button v-else type="button" class="page__launch" disabled>Bientôt disponible</button>
     </template>
     <template v-else>
       <h1 class="page__title">Exercice introuvable</h1>

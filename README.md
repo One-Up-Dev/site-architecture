@@ -44,5 +44,26 @@ npm run dev -- --host 127.0.0.1                                    # front sur :
 | `infra/` | init incus, profil, fabrication des images, Caddy, systemd, scripts VPS |
 | `src/views/ExerciseView.vue`, `PlaygroundView.vue` | lancement depuis un exercice, page du terminal (xterm.js) |
 
+## Écrire un exercice
+Un exercice devient lançable dès qu'il a son dossier `exercises/<slug>/`. Le `<slug>` doit aussi exister dans `src/data/site.js`, qui fournit le titre, le sujet, la durée et le niveau.
+
+```
+exercises/linux-ls/
+├─ exercise.json   {"image": "pg-ubuntu", "setup": "setup.sh", "cwd": "/root/projet"}
+├─ setup.sh        lancé en root dans le container juste après sa création (prépare les fichiers)
+└─ cours.md        le cours, affiché à droite du terminal
+```
+
+- **`exercise.json`** :
+  - `image` : `pg-ubuntu` ou `pg-alpine` ;
+  - `setup` (optionnel) : script lancé à la création ;
+  - `cwd` (optionnel) : dossier où s'ouvre le shell.
+- **`setup.sh`** : doit renvoyer 0, sinon l'environnement est supprimé et le visiteur reçoit une erreur. Le container n'a **pas Internet**, donc tout ce qui est nécessaire doit être dans l'image.
+- **`cours.md`** : du Markdown classique.
+  - Un `## Titre` par étape.
+  - Les blocs ```` ```bash ```` reçoivent un bouton **Essayer**, qui tape la commande dans le terminal sans la valider.
+  - Pour une réponse à déplier : `<details><summary>Voir la réponse</summary>…</details>`.
+- Redémarrer l'API après l'ajout d'un exercice : le catalogue est lu au démarrage.
+
 ## Feuille de route
 Le plan des playgrounds (incus, backend, déploiement VPS) est dans [`docs/PLAN-playgrounds.md`](docs/PLAN-playgrounds.md).

@@ -73,14 +73,36 @@ export async function stopInstance(name: string) {
   await wait(r.operation!, 30)
 }
 
+/** Dépose un fichier dans l'instance. */
+export async function pushFile(name: string, path: string, content: string, mode = '0644') {
+  const res = await request(`http://incus/1.0/instances/${encodeURIComponent(name)}/files?path=${encodeURIComponent(path)}`, {
+    dispatcher: agent,
+    method: 'POST',
+    headers: { 'content-type': 'application/octet-stream', 'x-incus-type': 'file', 'x-incus-mode': mode, 'x-incus-uid': '0', 'x-incus-gid': '0' },
+    body: content,
+  })
+  const json = (await res.body.json()) as IncusResponse<unknown>
+  if (json.type === 'error') throw new IncusError(json.error ?? 'envoi de fichier impossible', json.error_code ?? res.statusCode)
+}
+
+/** Exécute une commande non interactive et renvoie son code retour. */
+export async function execWait(name: string, command: string[], timeoutS = 60): Promise<number> {
+  const r = await api('POST', `/1.0/instances/${encodeURIComponent(name)}/exec`, {
+    command, interactive: false, 'wait-for-websocket': false, 'record-output': false,
+    environment: { HOME: '/root', LANG: 'C.UTF-8', PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' },
+  })
+  const op = await wait(r.operation!, timeoutS)
+  return Number(op.metadata?.return ?? -1)
+}
+
 export type ExecSession = { data: WebSocket; control: WebSocket; opPath: string }
 
 /** Lance un shell interactif et renvoie ses WebSockets (données + contrôle). */
-export async function execInteractive(name: string, command: string[], cols: number, rows: number): Promise<ExecSession> {
+export async function execInteractive(name: string, command: string[], cols: number, rows: number, cwd = '/root'): Promise<ExecSession> {
   const r = await api<{ id: string; metadata: { fds: Record<string, string> } }>(
     'POST', `/1.0/instances/${encodeURIComponent(name)}/exec`, {
       command,
-      cwd: '/root',
+      cwd,
       environment: { TERM: 'xterm-256color', HOME: '/root', USER: 'root', LANG: 'C.UTF-8' },
       interactive: true,
       'wait-for-websocket': true,

@@ -1,12 +1,14 @@
 // Cycle de vie des playgrounds. Incus est la source de vérité (métadonnées dans user.pg.*).
 import { randomUUID } from 'node:crypto'
-import { config, NAME_PREFIX, type ImageId } from './config.js'
-import { createInstance, listInstances, stopInstance, type Instance } from './incus.js'
+import { config, NAME_PREFIX } from './config.js'
+import { createInstance, execWait, listInstances, pushFile, stopInstance, type Instance } from './incus.js'
+import type { Exercise } from './exercises.js'
 
 export type Playground = {
   id: string
   name: string
   image: string
+  exercise: string
   session: string
   ip: string
   createdAt: string
@@ -24,6 +26,7 @@ const toPlayground = (i: Instance): Playground | null => {
     id: i.name.slice(NAME_PREFIX.length),
     name: i.name,
     image: i.config['user.pg.image'] ?? '',
+    exercise: i.config['user.pg.exercise'] ?? '',
     session: i.config['user.pg.session'],
     ip: i.config['user.pg.ip'] ?? '',
     createdAt: i.config['user.pg.created_at'] ?? i.created_at,
@@ -37,14 +40,14 @@ export async function listPlaygrounds(): Promise<Playground[]> {
 }
 
 export const publicView = (p: Playground) => ({
-  id: p.id, image: p.image, createdAt: p.createdAt, expiresAt: p.expiresAt, status: p.status,
+  id: p.id, exercise: p.exercise, createdAt: p.createdAt, expiresAt: p.expiresAt, status: p.status,
 })
 
 // Créations en cours (pas encore visibles dans incus) : évite de dépasser la capacité en cas de clics simultanés
 let pending = 0
 const pendingSessions = new Set<string>()
 
-export async function createPlayground(image: ImageId, session: string, ip: string): Promise<Playground> {
+export async function createPlayground(exercise: Exercise, session: string, ip: string): Promise<Playground> {
   if (pendingSessions.has(session)) throw new PlaygroundError('Un playground est déjà en cours de création.', 409, 'pending')
   const all = await listPlaygrounds()
   if (all.some(p => p.session === session)) {
@@ -63,15 +66,28 @@ export async function createPlayground(image: ImageId, session: string, ip: stri
     const id = randomUUID().replaceAll('-', '').slice(0, 12)
     const now = new Date()
     const expires = new Date(now.getTime() + config.ttlMinutes * 60_000)
+    const image = exercise.image
+    const name = NAME_PREFIX + id
     const meta = {
       'user.pg.session': session,
       'user.pg.image': image,
+      'user.pg.exercise': exercise.slug,
       'user.pg.ip': ip,
       'user.pg.created_at': now.toISOString(),
       'user.pg.expires_at': expires.toISOString(),
     }
-    await createInstance(NAME_PREFIX + id, image, config.profile, meta)
-    return { id, name: NAME_PREFIX + id, image, session, ip, createdAt: meta['user.pg.created_at'], expiresAt: meta['user.pg.expires_at'], status: 'Running' }
+    await createInstance(name, image, config.profile, meta)
+    if (exercise.setupScript) {
+      try {
+        await pushFile(name, '/tmp/setup.sh', exercise.setupScript, '0700')
+        const code = await execWait(name, ['/bin/bash', '/tmp/setup.sh'])
+        if (code !== 0) throw new Error(`setup.sh a renvoyé ${code}`)
+      } catch (e) {
+        await stopInstance(name).catch(() => {})
+        throw new PlaygroundError('La préparation de l’exercice a échoué. Réessayez dans un instant.', 500, 'setup_failed')
+      }
+    }
+    return { id, name, image, exercise: exercise.slug, session, ip, createdAt: meta['user.pg.created_at'], expiresAt: meta['user.pg.expires_at'], status: 'Running' }
   } finally {
     pending--
     pendingSessions.delete(session)

@@ -17,9 +17,9 @@ async function call(method, path, body) {
   return data
 }
 
-export const getImages = () => call('GET', '/api/images')
+export const getExercises = () => call('GET', '/api/exercises')
 export const getCurrent = () => call('GET', '/api/playgrounds/current').catch(e => { if (e.status === 404) return null; throw e })
-export const createPlayground = image => call('POST', '/api/playgrounds', { image })
+export const createPlayground = exercise => call('POST', '/api/playgrounds', { exercise })
 export const stopPlayground = id => call('DELETE', `/api/playgrounds/${id}`)
 
 export function terminalUrl(id, cols, rows) {

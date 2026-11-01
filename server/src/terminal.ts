@@ -26,7 +26,7 @@ export function closeAll(id: string, msg: object) {
   sockets.delete(id)
 }
 
-export async function attach(client: ClientSocket, p: Playground, cols0: unknown, rows0: unknown) {
+export async function attach(client: ClientSocket, p: Playground, cols0: unknown, rows0: unknown, cwd = '/root') {
   const cols = clamp(cols0, 10, 500, 80)
   const rows = clamp(rows0, 5, 200, 24)
   const set = sockets.get(p.id) ?? new Set()
@@ -34,7 +34,7 @@ export async function attach(client: ClientSocket, p: Playground, cols0: unknown
 
   let session: Awaited<ReturnType<typeof execInteractive>>
   try {
-    session = await execInteractive(p.name, ['/bin/bash', '-l'], cols, rows)
+    session = await execInteractive(p.name, ['/bin/bash', '-l'], cols, rows, cwd)
   } catch (e: any) {
     client.send(JSON.stringify({ type: 'error', message: 'Impossible d’ouvrir le terminal.' }))
     client.close(1011)
