@@ -1,0 +1,12 @@
+<script setup>
+import AppNavbar from './components/AppNavbar.vue'
+import AppFooter from './components/AppFooter.vue'
+import CookieNotice from './components/CookieNotice.vue'
+</script>
+
+<template>
+  <AppNavbar />
+  <RouterView />
+  <AppFooter />
+  <CookieNotice />
+</template>

@@ -1,0 +1,20 @@
+/* Design tokens — mesurés sur la page de référence, à ajuster à votre charte */
+:root {
+  --font: 'Outfit Variable', 'Outfit', system-ui, sans-serif;
+
+  --c-ink: #000;            /* barre de navigation, pied de page */
+  --c-ink-soft: #1a1a1a;    /* cartes sombres */
+  --c-text: #555;           /* texte courant */
+  --c-title: #2d2d2d;       /* titres de cartes */
+  --c-muted: #666;          /* descriptions */
+  --c-line: #e0e0e0;        /* bordures de cartes */
+  --c-bg: #fff;
+  --c-nav-link: #ede3e7;
+
+  --nav-h: 65px;
+  --card: 200px;            /* cartes carrées de 200×200 */
+  --gap: 16px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, .04);
+
+  --bp-mobile: 600px;       /* sous ce seuil : cartes pleine largeur */
+}

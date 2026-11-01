@@ -1,0 +1,25 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--c-text);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; cursor: pointer; }
+h1, h2, h3, h4, h5 { margin: 0; line-height: 1.2; }
+p { margin: 0; }
+
+/* Conteneur de contenu : largeur = N cartes + gouttières, centré */
+.shell {
+  width: min(100% - 24px, calc(5 * var(--card) + 4 * var(--gap) + 51px));
+  margin-inline: auto;
+}
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
