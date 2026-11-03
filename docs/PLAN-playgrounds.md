@@ -19,7 +19,13 @@
 - Backend inchangé : chaque exercice pointe pour l'instant vers `pg-ubuntu` ou `pg-alpine`.
 
 ### Premier exercice : « La commande ls » (fait)
-- `exercises/linux-ls/` contient un décor (`/root/projet` avec fichiers cachés, tailles et dates variées, script exécutable, lien symbolique) et un cours de 8 étapes, avec défis et réponses dépliables.
+- `exercises/linux/commandes/ls/` contient un décor (`/root/projet` avec fichiers cachés, tailles et dates variées, script exécutable, lien symbolique) et un cours de 8 étapes, avec défis et réponses dépliables.
+
+### Arborescence Linux (fait)
+- Linux contient des **rubriques thématiques** : Commandes (`ls`) et Fondamentaux (navigation, permissions, processus). Le niveau est une étiquette, et chaque rubrique a un filtre `?niveau=`.
+- Pages : `/catalogue/linux` (tuiles des rubriques), puis `/catalogue/linux/commandes` (index de référence), puis `/catalogue/linux/commandes/ls` (exercice). Un fil d'Ariane est présent sur chaque page.
+- L'identifiant d'un exercice est son chemin : il sert de dossier dans `exercises/`, de valeur `exercise` dans l'API et dans `user.pg.exercise`, et d'URL. Le serveur parcourt `exercises/` récursivement.
+- Git, Python et Docker restent à plat (`/catalogue/git/conflits`).
 - La page de l'environnement affiche le terminal à gauche et le cours à droite. La poignée est déplaçable (30 à 75 %, position mémorisée), le cours peut être masqué, et chaque bloc de commande a un bouton **Essayer**. Sous 900 px, un message demande un écran plus large.
 - L'API lance un **exercice** (`{exercise}`) et non plus une image : `GET /api/exercises` liste ceux qui sont lançables. Un exercice sans dossier affiche « Bientôt disponible ».
 - Pas encore de vérification automatique des étapes.

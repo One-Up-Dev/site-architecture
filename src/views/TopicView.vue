@@ -2,23 +2,32 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import TileGrid from '../components/TileGrid.vue'
-import { topicBySlug, exercisesOf, exerciseTile } from '../data/site'
+import AppBreadcrumb from '../components/AppBreadcrumb.vue'
+import { breadcrumb, topicBySlug, exercisesOf, exerciseTile, categoryTile } from '../data/site'
 
 const route = useRoute()
 const topic = computed(() => topicBySlug(route.params.topic))
-const tiles = computed(() => exercisesOf(route.params.topic).map(exerciseTile))
+// Sujet avec rubriques : tuiles de rubrique. Sinon : les exercices directement.
+const categories = computed(() => topic.value?.categories ?? [])
+const tiles = computed(() => categories.value.length
+  ? categories.value.map(c => categoryTile(topic.value, c))
+  : exercisesOf(route.params.topic).map(exerciseTile))
+const label = computed(() => {
+  const n = tiles.value.length
+  return categories.value.length ? `${n} rubrique${n > 1 ? 's' : ''}` : `${n} exercice${n > 1 ? 's' : ''}`
+})
 </script>
 
 <template>
   <main class="shell page">
     <template v-if="topic">
-      <RouterLink to="/catalogue" class="page__back">← Catalogue</RouterLink>
+      <AppBreadcrumb :items="breadcrumb(topic)" />
       <h1 class="page__title">
         <span class="page__badge" :style="{ background: topic.color }" aria-hidden="true">{{ topic.name.slice(0, 2).toUpperCase() }}</span>
         {{ topic.name }}
       </h1>
       <p class="page__intro">{{ topic.description }}</p>
-      <h2 class="page__sub">{{ tiles.length }} exercice{{ tiles.length > 1 ? 's' : '' }}</h2>
+      <h2 class="page__sub">{{ label }}</h2>
       <TileGrid :items="tiles" />
     </template>
     <template v-else>

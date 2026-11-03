@@ -45,10 +45,22 @@ npm run dev -- --host 127.0.0.1                                    # front sur :
 | `src/views/ExerciseView.vue`, `PlaygroundView.vue` | lancement depuis un exercice, page du terminal (xterm.js) |
 
 ## Écrire un exercice
-Un exercice devient lançable dès qu'il a son dossier `exercises/<slug>/`. Le `<slug>` doit aussi exister dans `src/data/site.js`, qui fournit le titre, le sujet, la durée et le niveau.
+L'**identifiant** d'un exercice est son **chemin** : `<sujet>/[<rubrique>/]<nom>`, par exemple `linux/commandes/ls` ou `git/conflits`. Ce chemin sert à trois endroits :
+- c'est son dossier dans `exercises/` ;
+- c'est la valeur envoyée à l'API ;
+- c'est son URL, sous la forme `/catalogue/<id>`.
+
+L'exercice doit aussi être déclaré dans `src/data/site.js` avec :
+- `topic`, `category` (facultatif) et `slug` ;
+- le titre, la durée et le niveau (`débutant`, `intermédiaire` ou `avancé`) ;
+- `command` (facultatif) : le nom affiché en police mono dans l'index de la rubrique.
+
+Les rubriques d'un sujet sont déclarées dans `topics[].categories`. Un sujet sans rubriques garde ses exercices à plat.
+
+Un exercice devient **lançable** dès que son dossier existe :
 
 ```
-exercises/linux-ls/
+exercises/linux/commandes/ls/
 ├─ exercise.json   {"image": "pg-ubuntu", "setup": "setup.sh", "cwd": "/root/projet"}
 ├─ setup.sh        lancé en root dans le container juste après sa création (prépare les fichiers)
 └─ cours.md        le cours, affiché à droite du terminal

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import SearchField from '../components/SearchField.vue'
 import TileGrid from '../components/TileGrid.vue'
 import SectionLabel from '../components/SectionLabel.vue'
-import { topics, sections, exercises, topicBySlug, topicTile, exerciseTile } from '../data/site'
+import { topics, sections, exercises, topicBySlug, categoryOf, topicTile, exerciseTile } from '../data/site'
 
 const query = ref('')
 const norm = s => (s || '').toLocaleLowerCase('fr').normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -13,7 +13,7 @@ const topicTiles = computed(() => topics.filter(t => has(t.name, t.summary)).map
 
 // Sans recherche : sections éditoriales. Avec recherche : tous les exercices correspondants.
 const sectionView = computed(() => {
-  const match = e => has(e.title, e.summary, topicBySlug(e.topic)?.name)
+  const match = e => has(e.title, e.command, e.summary, topicBySlug(e.topic)?.name, categoryOf(e.topic, e.category)?.name)
   if (query.value) {
     const found = exercises.filter(match)
     return found.length ? [{ id: 'results', label: 'Exercices', tiles: found.map(exerciseTile) }] : []

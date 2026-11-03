@@ -71,7 +71,7 @@ export async function createPlayground(exercise: Exercise, session: string, ip: 
     const meta = {
       'user.pg.session': session,
       'user.pg.image': image,
-      'user.pg.exercise': exercise.slug,
+      'user.pg.exercise': exercise.id,
       'user.pg.ip': ip,
       'user.pg.created_at': now.toISOString(),
       'user.pg.expires_at': expires.toISOString(),
@@ -87,7 +87,7 @@ export async function createPlayground(exercise: Exercise, session: string, ip: 
         throw new PlaygroundError('La préparation de l’exercice a échoué. Réessayez dans un instant.', 500, 'setup_failed')
       }
     }
-    return { id, name, image, exercise: exercise.slug, session, ip, createdAt: meta['user.pg.created_at'], expiresAt: meta['user.pg.expires_at'], status: 'Running' }
+    return { id, name, image, exercise: exercise.id, session, ip, createdAt: meta['user.pg.created_at'], expiresAt: meta['user.pg.expires_at'], status: 'Running' }
   } finally {
     pending--
     pendingSessions.delete(session)

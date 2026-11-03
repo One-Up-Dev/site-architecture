@@ -6,7 +6,7 @@ import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 import CoursePanel from '../components/CoursePanel.vue'
 import { getCurrent, stopPlayground, terminalUrl } from '../api'
-import { exerciseBySlug } from '../data/site'
+import { exerciseById, exercisePath } from '../data/site'
 
 const MIN_WIDTH = 900
 const route = useRoute()
@@ -17,14 +17,14 @@ const state = ref('connexion')        // connexion | connecté | reconnexion | t
 const notice = ref('')
 const expiresAt = ref(null)
 const now = ref(Date.now())
-const exerciseSlug = ref(route.query.ex || '')
+const exerciseKey = ref(route.query.ex || '')   // identifiant : linux/commandes/ls
 const term = shallowRef(null)
 const narrow = ref(window.innerWidth < MIN_WIDTH)
 let fit, ws, retries = 0, ended = false, clock, onResize
 
 // ── Exercice d'origine ─────────────────────────────────────
-const exercise = computed(() => exerciseBySlug(exerciseSlug.value))
-const backTo = computed(() => exercise.value ? `/exercices/${exercise.value.slug}` : '/catalogue')
+const exercise = computed(() => exerciseById(exerciseKey.value))
+const backTo = computed(() => exercise.value ? exercisePath(exercise.value) : '/catalogue')
 const backLabel = computed(() => exercise.value ? exercise.value.title : 'Catalogue')
 
 // ── Largeur du terminal (poignée) et affichage du cours ────
@@ -136,7 +136,7 @@ onMounted(async () => {
     return
   }
   expiresAt.value = new Date(p.expiresAt).getTime()
-  if (p.exercise) exerciseSlug.value = p.exercise
+  if (p.exercise) exerciseKey.value = p.exercise
   clock = setInterval(() => { now.value = Date.now() }, 1000)
   if (!narrow.value) setupTerminal()
 })
@@ -185,7 +185,7 @@ async function stop() {
         <div class="pg__term"><div ref="host" class="pg__xterm"></div></div>
         <template v-if="exercise && showCourse">
           <div class="pg__handle" role="separator" aria-orientation="vertical" aria-label="Redimensionner" @pointerdown="startDrag"></div>
-          <CoursePanel class="pg__course" :slug="exercise.slug" @try="tryCommand" />
+          <CoursePanel class="pg__course" :id="exerciseKey" @try="tryCommand" />
         </template>
       </div>
     </template>

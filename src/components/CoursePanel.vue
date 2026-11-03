@@ -3,14 +3,14 @@
 import { nextTick, ref, watch } from 'vue'
 import { loadCourse } from '../exercises'
 
-const props = defineProps({ slug: { type: String, required: true } })
+const props = defineProps({ id: { type: String, required: true } })   // linux/commandes/ls
 const emit = defineEmits(['try'])
 const html = ref('')
 const missing = ref(false)
 const root = ref(null)
 
 async function render() {
-  const h = await loadCourse(props.slug)
+  const h = await loadCourse(props.id)
   missing.value = !h
   html.value = h ?? ''
   await nextTick()
@@ -25,7 +25,7 @@ async function render() {
     pre.parentElement.appendChild(btn)
   }
 }
-watch(() => props.slug, render, { immediate: true })
+watch(() => props.id, render, { immediate: true })
 </script>
 
 <template>

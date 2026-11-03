@@ -4,7 +4,7 @@ import rateLimit from '@fastify/rate-limit'
 import websocket from '@fastify/websocket'
 import { z } from 'zod'
 import { config } from './config.js'
-import { getExercise, listExercises } from './exercises.js'
+import { EXERCISE_ID, getExercise, listExercises } from './exercises.js'
 import { ensureSession, readSession } from './session.js'
 import {
   PlaygroundError, createPlayground, destroy, findOwned, listPlaygrounds, publicView,
@@ -37,7 +37,7 @@ app.get('/api/playgrounds/current', async (req, reply) => {
   return publicView(p)
 })
 
-const CreateBody = z.object({ exercise: z.string().regex(/^[a-z0-9-]{1,64}$/) }).strict()
+const CreateBody = z.object({ exercise: z.string().max(128).regex(EXERCISE_ID) }).strict()
 
 app.post('/api/playgrounds', {
   config: { rateLimit: { max: config.createPerHour, timeWindow: '1 hour' } },
