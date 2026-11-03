@@ -26,10 +26,11 @@ printf 'API_KEY=a-remplacer\n' > .env
 printf 'logs/\n.env\n' > .gitignore
 printf 'theme=sombre\n' > .config/preferences
 
-# Dates variées (pour ls -t / -r)
+# Dates variées (pour ls -t / -r / -u). La ctime, elle, ne se règle pas : elle vaudra l'heure du lancement.
 touch -d '2023-11-02 09:15' docs/changelog.md
 touch -d '2024-03-01 14:00' notes.txt
 touch -d '2024-07-14 10:30' README.md
+touch -a -d '2025-10-01 09:00' README.md      # lu plus tard que modifié (ls -lu)
 touch -d '2025-01-20 08:45' todo.txt
 touch -d '2025-06-05 17:20' src/main.py
 touch -h -d '2025-09-10 12:00' dernier.log

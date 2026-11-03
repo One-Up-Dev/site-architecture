@@ -19,7 +19,7 @@
 - Backend inchangé : chaque exercice pointe pour l'instant vers `pg-ubuntu` ou `pg-alpine`.
 
 ### Premier exercice : « La commande ls » (fait)
-- `exercises/linux/commandes/ls/` contient un décor (`/root/projet` avec fichiers cachés, tailles et dates variées, script exécutable, lien symbolique) et un cours de 8 étapes, avec défis et réponses dépliables.
+- `exercises/linux/commandes/ls/` contient un décor (`/root/projet` avec fichiers cachés, tailles et dates variées, script exécutable, lien symbolique) et un cours de 9 étapes (dont mtime, ctime et atime avec `-tc` et `-tu`), avec défis et réponses dépliables.
 
 ### Arborescence Linux (fait)
 - Linux contient des **rubriques thématiques** : Commandes (`ls`) et Fondamentaux (navigation, permissions, processus). Le niveau est une étiquette, et chaque rubrique a un filtre `?niveau=`.
