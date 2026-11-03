@@ -20,6 +20,7 @@
 
 ### Premier exercice : « La commande ls » (fait)
 - `exercises/linux/commandes/ls/` contient un décor (`/root/projet` avec fichiers cachés, tailles et dates variées, script exécutable, lien symbolique) et un cours de 9 étapes (dont mtime, ctime et atime avec `-tc` et `-tu`), avec défis et réponses dépliables.
+- `exercises/linux/commandes/man/` contient un cours de 7 étapes : lecteur `less`, SYNOPSIS, recherche, sections, `apropos`/`man -k`, commandes internes (`type`, `help`). Pas de décor : les pages de manuel sont dans l'image `pg-ubuntu` (`man-db`).
 
 ### Arborescence Linux (fait)
 - Linux contient des **rubriques thématiques** : Commandes (`ls`) et Fondamentaux (navigation, permissions, processus). Le niveau est une étiquette, et chaque rubrique a un filtre `?niveau=`.

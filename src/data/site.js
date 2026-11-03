@@ -58,6 +58,7 @@ export const levels = ['débutant', 'intermédiaire', 'avancé']
 
 export const exercises = [
   { topic: 'linux', category: 'commandes', slug: 'ls', command: 'ls', title: 'La commande ls', summary: 'Lister un dossier, afficher les fichiers cachés, trier par date ou par taille, filtrer avec des motifs.', level: 'débutant', durationMin: 20, featured: true, popular: true },
+  { topic: 'linux', category: 'commandes', slug: 'man', command: 'man', title: 'La commande man', summary: 'Lire le manuel, comprendre un SYNOPSIS, chercher dans une page, choisir une section, trouver une commande avec apropos.', level: 'débutant', durationMin: 15 },
   { topic: 'linux', category: 'fondamentaux', slug: 'navigation', title: 'Se repérer dans le système', summary: 'Parcourir l’arborescence, lire et rechercher des fichiers.', level: 'débutant', durationMin: 15, popular: true },
   { topic: 'linux', category: 'fondamentaux', slug: 'permissions', title: 'Permissions et utilisateurs', summary: 'Créer des utilisateurs, régler les droits et comprendre chmod / chown.', level: 'débutant', durationMin: 20 },
   { topic: 'linux', category: 'fondamentaux', slug: 'processus', title: 'Processus et services', summary: 'Observer, prioriser et arrêter des processus.', level: 'intermédiaire', durationMin: 25, popular: true },
